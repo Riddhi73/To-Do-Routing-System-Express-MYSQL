@@ -1,0 +1,16 @@
+{
+  "name": "to-do",
+  "version": "1.0.0",
+  "description": "to-do list where you can add, delete and update your tasks",
+  "main": "app.js",
+  "scripts": {
+    "start": "cross-env NODE_ENV=staging nodemon app",
+    "production": "cross-env NODE_ENV=production nodemon app",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Riddhiman Swanan Debnath",
+  "license": "MIT",
+  "devDependencies": {
+    "cross-env": "^10.0.0"
+  }
+}
