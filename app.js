@@ -1,41 +1,29 @@
 // Load dependencies
-const http = require("http");
-const fs = require("fs");
-const path = require("path");
-const { handleReqRes } = require("./helpers/handleReqRes");
+const express = require("express");
+const routes = require("./routes");
 const enviroment = require("./helpers/environment");
-const data = require("./lib/data");
+const { notFoundHandler } = require("./handlers/routes/notFoundHandler");
 
-// Test CRUD operations
-// data.create("data", "newFile", { name: "test file" }, (err) => {
-//   console.log(err);
-// })
+const app = express();
+// Middlewares
+app.use(express.json());
 
-// data.read("data", "newFile", (err, data) => {
-//   console.log(err, data);
-// });
+// Routes
+app.get("/sample", routes.sample);
+app.post("/create", routes.create);
+app.get("/read", routes.readAll);
+app.get("/read/:id", routes.readSingle);
+app.put("/update/:id", routes.update);
+app.delete("/delete/:id", routes.delete);
 
-// data.update("data", "newFile", { name: "updated file" }, (err) => {
-//   console.log(err);
-// });
-
-// data.delete("data", "newFile", (err) => {
-//   console.log(err);
-// });
-
-// App container
-const app = {};
-
-// Initialize server
-app.createServer = () => {
-  const server = http.createServer(app.handleReqRes);
-  server.listen(enviroment.port, () => {
-    console.log(`server is listeing on port ${enviroment.port} in ${enviroment.envName} mode`);
-  });
-};
-
-// Route requests
-app.handleReqRes = handleReqRes;
+// 404 handler
+ app.use(notFoundHandler, (req, res) => {
+   res.status(404);
+ });
 
 // Start server
-app.createServer();
+app.listen(enviroment.port, () => {
+  console.log(
+    `Server is listening on port ${enviroment.port} in ${enviroment.envName} mode`
+  );
+});

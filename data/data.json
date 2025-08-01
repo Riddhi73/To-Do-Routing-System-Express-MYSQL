@@ -1,14 +1,8 @@
 [
   {
-    "id": 3,
-    "title": "Grocery",
+    "id": 1,
+    "title": "Bajar",
     "description": "Egg, Milk, Onion",
     "date": "07-31-2025"
-  },
-  {
-    "id": 4,
-    "title": "Vegetables",
-    "description": "Shak, Vendi",
-    "date": "07-01-2025"
   }
 ]

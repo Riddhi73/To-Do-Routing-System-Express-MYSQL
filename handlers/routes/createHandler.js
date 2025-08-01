@@ -1,70 +1,55 @@
-const handler = {};
+// handlers/routes/createHandler.js
 const lib = require("../../lib/data");
 
-// Routes HTTP methods
-handler.createHandler = (reqProp, callback) => {
-  const acceptedMethods = ["get", "post", "put", "delete"];
-  if (acceptedMethods.includes(reqProp.method)) {
-    handler._create[reqProp.method](reqProp, callback);
-  } else {
-    callback(405, {
-      error: "Method not allowed",
-    });
-    return;
-  }
-};
+const createHandler = (req, res) => {
+  const { id, title, description, date } = req.body;
 
-// Private methods container
-handler._create = {};
-
-// Creates new todo
-handler._create.post = (reqProp, callback) => {
-  // Validate ID
-  const id =
-    typeof reqProp.body.id === "number" && reqProp.body.id > 0
-      ? reqProp.body.id
+  const validId = typeof id === "number" && id > 0 ? id : false;
+  const validTitle =
+    typeof title === "string" && title.trim().length > 0 ? title.trim() : false;
+  const validDescription =
+    typeof description === "string" && description.trim().length > 0
+      ? description.trim()
       : false;
+  const validDate =
+    typeof date === "string" && date.trim().length > 0 ? date.trim() : false;
 
-  // Validate title
-  const title =
-    typeof reqProp.body.title === "string" &&
-    reqProp.body.title.trim().length > 0
-      ? reqProp.body.title.trim()
-      : false;
-
-  // Validate description
-  const description =
-    typeof reqProp.body.description === "string" &&
-    reqProp.body.description.trim().length > 0
-      ? reqProp.body.description.trim()
-      : false;
-
-  // Validate date
-  const date =
-    typeof reqProp.body.date === "string" && reqProp.body.date.trim().length > 0
-      ? reqProp.body.date.trim()
-      : false;
-
-  // Save if valid
-  if (id && title && description && date) {
-    let newData = { id, title, description, date };
-    // Store todo data
-    lib.create("data", "data", newData, (err) => {
-      if (!err) {
-        callback(201, { message: "To-do created", data: newData });
+  if (validId && validTitle && validDescription && validDate) {
+    const newTodo = {
+      id,
+      title: validTitle,
+      description: validDescription,
+      date: validDate,
+    };
+    lib.read("data", "data", (err, data) => {
+      if (err) {
+        return res.status(500).json({ error: `Error reading data: ${err}` });
+      }
+      // Check if the ID already exists
+      const existingTodo = data.find((todo) => todo.id === validId);
+      if (existingTodo) {
+        return res.status(400).json({ error: "ID already exists" });
       } else {
-        callback(500, { error: `Error creating resource ${err}` });
+        lib.create("data", "data", newTodo, (err) => {
+          if (!err) {
+            res.status(201).json({ message: "To-do created", data: newTodo });
+          } else {
+            res.status(500).json({ error: `Error creating resource: ${err}` });
+          }
+        });
       }
     });
   } else {
-    // Return validation errors
-    callback(400, {
-      error: `Missing required fields: ${!id ? "id" : ""} ${
-        !title ? "title" : ""
-      } ${!description ? "description" : ""} ${!date ? "date" : ""}`,
-    });
-    return;
+    const missing = [];
+    if (!validId) missing.push("id");
+    if (!validTitle) missing.push("title");
+    if (!validDescription) missing.push("description");
+    if (!validDate) missing.push("date");
+
+    res
+      .status(400)
+      .json({ error: `Missing or invalid fields: ${missing.join(", ")}` });
   }
 };
 
-module.exports = handler;
+module.exports = createHandler;

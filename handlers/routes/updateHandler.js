@@ -1,91 +1,61 @@
-const handler = {};
+const { json } = require("express");
 const lib = require("../../lib/data");
 
-// Private methods container
-handler._update = {};
+const updateHandler = (req, res) => {
+  const id = req.params.id;
+  const { title, description, date } = req.body;
+  // console.log("Update Handler called with ID:", id);
+  // If an ID is provided, return a single todo
+  if (id) {
+    const parsedId = parseInt(id);
+    if (isNaN(parsedId) || parsedId <= 0) {
+      return res.status(400).json({ error: "Invalid ID format" });
+    }
 
-// Route HTTP methods
-handler.updateHandler = (reqProp, callback) => {
-  const acceptedMethods = ["get", "post", "put", "delete"];
-  if (acceptedMethods.includes(reqProp.method)) {
-    handler._update[reqProp.method](reqProp, callback);
-  } else {
-    callback(405, {
-      error: "Method not allowed",
-    });
-    return;
-  }
-};
+    const validTitle =
+      typeof title === "string" && title.trim().length > 0
+        ? title.trim()
+        : false;
+    const validDescription =
+      typeof description === "string" && description.trim().length > 0
+        ? description.trim()
+        : false;
+    const validDate =
+      typeof date === "string" && date.trim().length > 0 ? date.trim() : false;
 
-// Update todo item
-handler._update.put = (reqProp, callback) => {
-  // Validate ID
-  const id =
-    typeof reqProp.queryStringObj.id === "string" &&
-    !isNaN(parseInt(reqProp.queryStringObj.id)) &&
-    parseInt(reqProp.queryStringObj.id) > 0
-      ? parseInt(reqProp.queryStringObj.id)
-      : false;
-
-  // Check title
-  const title =
-    typeof reqProp.body.title === "string" &&
-    reqProp.body.title.trim().length > 0
-      ? reqProp.body.title.trim()
-      : false;
-
-  // Check description
-  const description =
-    typeof reqProp.body.description === "string" &&
-    reqProp.body.description.trim().length > 0
-      ? reqProp.body.description.trim()
-      : false;
-
-  // Check date
-  const date =
-    typeof reqProp.body.date === "string" && reqProp.body.date.trim().length > 0
-      ? reqProp.body.date.trim()
-      : false;
-
-  // Process update request
-  if (id && (title || description || date)) {
-    // Read existing data
     lib.read("data", "data", (err, data) => {
       if (!err && data) {
-        // Clone data safely
-        let todo = JSON.parse(JSON.stringify(data));
-        // Find target todo
-        const todoIndex = todo.findIndex((item) => item.id === id);
+        let todos = JSON.parse(JSON.stringify(data));
+        const todoIndex = todos.findIndex((todo) => todo.id === parsedId);
+        // console.log("Todo Index:", todoIndex);
         if (todoIndex !== -1) {
-          // Update fields
-          if (title) todo[todoIndex].title = title;
-          if (description) todo[todoIndex].description = description;
-          if (date) todo[todoIndex].date = date;
-
-          // Save changes
-          lib.update("data", "data", todo, (err) => {
+          // console.log("Found todo:", todo);
+          todos[todoIndex].title = validTitle;
+          todos[todoIndex].description = validDescription;
+          todos[todoIndex].date = validDate;
+          lib.update("data", "data", todos, (err) => {
             if (!err) {
-              callback(200, { message: "To-do updated successfully" });
+              // console.log("Todo updated successfully");
+              res.status(200).json({
+                message: "To-do updated successfully",
+                data: todos[todoIndex],
+              });
             } else {
-              callback(500, { error: `Error updating resource ${err}` });
+              // console.error("Error updating todo:", err);
+              return res.status(500).json({ error: "Error updating data" });
             }
           });
         } else {
-          callback(404, { error: "To-do not found" });
+          return res.status(404).json({ error: "To-do not found" });
         }
       } else {
-        callback(500, { error: `Error reading data ${err}` });
+        return res.status(500).json({ error: "Error reading data" });
       }
     });
   } else {
-    // Validation failed
-    callback(400, {
-      error: `Missing required fields: ${!id ? "id" : ""} ${
-        !title ? "title" : ""
-      } ${!description ? "description" : ""} ${!date ? "date" : ""}`,
-    });
+    return res.status(400).json({ error: "ID is required for update" });
   }
 };
 
 // Export
-module.exports = handler;
+module.exports = updateHandler;

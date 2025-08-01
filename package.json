@@ -12,5 +12,8 @@
   "license": "MIT",
   "devDependencies": {
     "cross-env": "^10.0.0"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
   }
 }

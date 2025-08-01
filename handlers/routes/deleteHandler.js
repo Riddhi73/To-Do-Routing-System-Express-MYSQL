@@ -1,58 +1,35 @@
-const handler = {};
 const lib = require("../../lib/data");
 
-// Private methods storage
-handler._delete = {};
-
-// Route HTTP methods
-handler.deleteHandler = (reqProp, callback) => {
-  const acceptedMethods = ["get", "post", "put", "delete"];
-  if (acceptedMethods.includes(reqProp.method)) {
-    handler._delete[reqProp.method](reqProp, callback);
-  } else {
-    callback(405, {
-      error: "Method not allowed",
-    });
-    return;
-  }
-};
-
-// Delete todo item
-handler._delete.delete = (reqProp, callback) => {
-    // Validate ID format
-    const id =
-        typeof reqProp.queryStringObj.id === "string" &&
-        !isNaN(parseInt(reqProp.queryStringObj.id)) &&
-        parseInt(reqProp.queryStringObj.id) > 0
-            ? parseInt(reqProp.queryStringObj.id)
-            : false;
+const deleteHandler = (req, res) => {
+    const id = req.params.id;
+    // If an ID is provided, delete the todo
     if (id) {
-        // Read existing todos
+        const parsedId = parseInt(id);
+        if (isNaN(parsedId) || parsedId <= 0) {
+            return res.status(400).json({ error: "Invalid ID format" });
+        }
+
         lib.read("data", "data", (err, data) => {
             if (!err && data) {
-                // Clone data safely
-                let todo = JSON.parse(JSON.stringify(data));
-                // Find target todo
-                const todoIndex = todo.findIndex((item) => item.id === id);
+                const todos = typeof data === "string" ? JSON.parse(data) : data;
+                const todoIndex = todos.findIndex((item) => item.id === parsedId);
                 if (todoIndex !== -1) {
-                    // Remove todo
-                    todo.splice(todoIndex, 1);
-                    // Save updated list
-                    lib.update("data", "data", todo, (err) => {
-                        if (!err) {
-                            callback(200, { message: "To-do deleted successfully" });
+                    todos.splice(todoIndex, 1);
+                    lib.delete("data", "data", todos, (writeErr) => {
+                        if (!writeErr) {
+                            return res.status(200).json({ message: "To-do deleted successfully", data: todos[todoIndex] });
                         } else {
-                            callback(500, { error: `Error deleting resource ${err}` });
+                            return res.status(500).json({ error: "Error writing data" });
                         }
                     });
                 } else {
-                    callback(404, { error: "To-do not found" });
+                    return res.status(404).json({ error: "To-do not found" });
                 }
             } else {
-                callback(500, { error: `Error reading data ${err}` });
+                return res.status(500).json({ error: "Error reading data" });
             }
         });
     }
 }
 
-module.exports = handler;
+module.exports = deleteHandler;
