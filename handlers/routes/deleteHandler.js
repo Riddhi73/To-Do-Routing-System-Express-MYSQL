@@ -1,8 +1,10 @@
 const handler = {};
 const lib = require("../../lib/data");
 
+// Private methods storage
 handler._delete = {};
 
+// Route HTTP methods
 handler.deleteHandler = (reqProp, callback) => {
   const acceptedMethods = ["get", "post", "put", "delete"];
   if (acceptedMethods.includes(reqProp.method)) {
@@ -15,7 +17,9 @@ handler.deleteHandler = (reqProp, callback) => {
   }
 };
 
+// Delete todo item
 handler._delete.delete = (reqProp, callback) => {
+    // Validate ID format
     const id =
         typeof reqProp.queryStringObj.id === "string" &&
         !isNaN(parseInt(reqProp.queryStringObj.id)) &&
@@ -23,12 +27,17 @@ handler._delete.delete = (reqProp, callback) => {
             ? parseInt(reqProp.queryStringObj.id)
             : false;
     if (id) {
+        // Read existing todos
         lib.read("data", "data", (err, data) => {
             if (!err && data) {
+                // Clone data safely
                 let todo = JSON.parse(JSON.stringify(data));
+                // Find target todo
                 const todoIndex = todo.findIndex((item) => item.id === id);
                 if (todoIndex !== -1) {
+                    // Remove todo
                     todo.splice(todoIndex, 1);
+                    // Save updated list
                     lib.update("data", "data", todo, (err) => {
                         if (!err) {
                             callback(200, { message: "To-do deleted successfully" });
@@ -45,4 +54,5 @@ handler._delete.delete = (reqProp, callback) => {
         });
     }
 }
+
 module.exports = handler;

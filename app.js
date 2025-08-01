@@ -1,4 +1,4 @@
-// dependencies
+// Load dependencies
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
@@ -6,6 +6,7 @@ const { handleReqRes } = require("./helpers/handleReqRes");
 const enviroment = require("./helpers/environment");
 const data = require("./lib/data");
 
+// Test CRUD operations
 // data.create("data", "newFile", { name: "test file" }, (err) => {
 //   console.log(err);
 // })
@@ -22,10 +23,10 @@ const data = require("./lib/data");
 //   console.log(err);
 // });
 
-// app object - module scaffolding
+// App container
 const app = {};
 
-// create server
+// Initialize server
 app.createServer = () => {
   const server = http.createServer(app.handleReqRes);
   server.listen(enviroment.port, () => {
@@ -33,7 +34,8 @@ app.createServer = () => {
   });
 };
 
-//handle request response
+// Route requests
 app.handleReqRes = handleReqRes;
 
+// Start server
 app.createServer();

@@ -1,4 +1,4 @@
-// dependencies
+// Import dependencies
 const url = require("url");
 const { StringDecoder } = require("string_decoder");
 const routes = require("../routes");
@@ -7,9 +7,9 @@ const { parse } = require("path");
 const util = require("./util");
 const handler = {};
 
-// Main request handler
+// Route requests
 handler.handleReqRes = (req, res) => {
-  // Parse URL components
+  // Parse URL
   const parsedUrl = url.parse(req.url, true);
   const pathName = parsedUrl.pathname;
   const queryStringObj = parsedUrl.query;
@@ -17,7 +17,7 @@ handler.handleReqRes = (req, res) => {
   const method = req.method.toLowerCase();
   const headerObj = req.headers;
 
-  // Collect request properties
+  // Collect props
   const reqProp = {
     parsedUrl,
     pathName,
@@ -27,26 +27,26 @@ handler.handleReqRes = (req, res) => {
     headerObj,
   };
 
-  // Setup data decoder
+  // Setup decoder
   const decoder = new StringDecoder("utf-8");
   let realData = "";
 
-  // Choose route handler
+  // Select handler
   const chosenHandler = routes[trimmedPath]
     ? routes[trimmedPath]
     : notFoundHandler;
 
-  // Handle incoming data chunks
+  // Collect chunks
   req.on("data", (buffer) => {
     realData += decoder.write(buffer);
   });
 
-  // Process complete request
+  // Process request
   req.on("end", () => {
     realData += decoder.end();
     reqProp.body = util.parseJson(realData);
 
-    // Execute handler and send response
+    // Send response
     chosenHandler(reqProp, (statusCode, payload) => {
       statusCode = typeof statusCode === "number" ? statusCode : 500;
       payload = typeof payload === "object" ? payload : {};
@@ -58,4 +58,5 @@ handler.handleReqRes = (req, res) => {
   });
 };
 
+// Export module
 module.exports = handler;
