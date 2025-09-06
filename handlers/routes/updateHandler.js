@@ -1,9 +1,10 @@
 const { json } = require("express");
 const lib = require("../../lib/data");
+const db = require("../../data/database");
 
-const updateHandler = (req, res) => {
+const updateHandler = async (req, res) => {
   const id = req.params.id;
-  const { title, description, date } = req.body;
+  const { title, description } = req.body;
   // console.log("Update Handler called with ID:", id);
   // If an ID is provided, return a single todo
   if (id) {
@@ -22,6 +23,8 @@ const updateHandler = (req, res) => {
         : false;
     const validDate =
       typeof date === "string" && date.trim().length > 0 ? date.trim() : false;
+    
+    
 
     lib.read("data", "data", (err, data) => {
       if (!err && data) {

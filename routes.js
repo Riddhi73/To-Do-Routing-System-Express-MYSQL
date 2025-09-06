@@ -4,6 +4,8 @@ const sampleHandler = require("./handlers/routes/sampleHandler");
 // Import create handler module
 const create = require("./handlers/routes/createHandler");
 
+const insert = require("./handlers/routes/insertHandler");
+
 // Import update handler module
 const update = require("./handlers/routes/updateHandler");
 
@@ -20,6 +22,7 @@ const routes = {
   create: create, // Handle create request
   readAll: readAll, // Handle read all request
   readSingle: readSingle, // Handle read single request
+  insert: insert,
   update: update, // Handle update request
   delete: deleteHandler // Handle delete request
 };

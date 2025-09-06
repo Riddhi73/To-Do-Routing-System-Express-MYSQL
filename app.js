@@ -13,6 +13,7 @@ app.get("/sample", routes.sample);
 app.post("/create", routes.create);
 app.get("/read", routes.readAll);
 app.get("/read/:id", routes.readSingle);
+app.post("/insert", routes.insert);
 app.put("/update/:id", routes.update);
 app.delete("/delete/:id", routes.delete);
 
