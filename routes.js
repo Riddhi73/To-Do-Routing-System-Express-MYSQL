@@ -2,9 +2,9 @@
 const sampleHandler = require("./handlers/routes/sampleHandler");
 
 // Import create handler module
-const create = require("./handlers/routes/createHandler");
+const insertAuthorHandler = require("./handlers/routes/insertAuthorHandler");
 
-const insert = require("./handlers/routes/insertHandler");
+const insertContent = require("./handlers/routes/insertContentHandler");
 
 // Import update handler module
 const update = require("./handlers/routes/updateHandler");
@@ -19,12 +19,12 @@ const {readAll, readSingle} = require("./handlers/routes/readHandler");
 // Define route-to-handler mappings
 const routes = {
   sample: sampleHandler, // Handle sample route
-  create: create, // Handle create request
+  create: insertAuthorHandler, // Handle create request
   readAll: readAll, // Handle read all request
   readSingle: readSingle, // Handle read single request
-  insert: insert,
+  insert: insertContent,
   update: update, // Handle update request
-  delete: deleteHandler // Handle delete request
+  delete: deleteHandler, // Handle delete request
 };
 
 // Export all route handlers

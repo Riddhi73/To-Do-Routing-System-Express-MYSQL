@@ -1,7 +1,7 @@
 const db = require("../../data/database");
 
 // sampleHandler.js
-const insertHandler = async (req, res) => {
+const insertContentHandler = async (req, res) => {
   const data = [req.body.title, req.body.description, req.body.author_id];
   //console.log(req.body);
   try {
@@ -10,7 +10,7 @@ const insertHandler = async (req, res) => {
       [data]
     );
       res.status(200).json({
-          message: 'Data Fetched Successfully',
+          message: 'Data Inserted Successfully',
           data: results,
     });
   } catch (err) {
@@ -19,4 +19,4 @@ const insertHandler = async (req, res) => {
   }
 };
 
-module.exports = insertHandler;
+module.exports = insertContentHandler;
