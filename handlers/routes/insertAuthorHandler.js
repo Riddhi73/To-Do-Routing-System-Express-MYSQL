@@ -2,13 +2,13 @@
 const db = require("../../data/database")
 
 const insertAuthorHandler = async (req, res) => {
-  const data = [req.body.name, req.body.email];
+  const newAuthor = {
+    name: req.body.name,
+    email: req.body.email
+  }
   //console.log(req.body);
   try {
-    const [results] = await db.query(
-      "INSERT INTO authors (name, email) VALUES (?)",
-      [data]
-    );
+    const results = await db.getDb().collection('authors').insertOne(newAuthor);
       res.status(200).json({
           message: 'Data Inserted Successfully',
           data: results,
