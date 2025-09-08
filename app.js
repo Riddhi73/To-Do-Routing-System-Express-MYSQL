@@ -3,7 +3,7 @@ const express = require("express");
 const routes = require("./routes");
 const enviroment = require("./helpers/environment");
 const { notFoundHandler } = require("./handlers/routes/notFoundHandler");
-
+const db = require("./data/database");
 const app = express();
 // Middlewares
 app.use(express.json());
@@ -18,13 +18,15 @@ app.put("/update/:id", routes.update);
 app.delete("/delete/:id", routes.delete);
 
 // 404 handler
- app.use(notFoundHandler, (req, res) => {
-   res.status(404);
- });
+app.use(notFoundHandler, (req, res) => {
+  res.status(404);
+});
 
 // Start server
-app.listen(enviroment.port, () => {
-  console.log(
-    `Server is listening on port ${enviroment.port} in ${enviroment.envName} mode`
-  );
+db.connectToDatbase().then(function () {
+  app.listen(enviroment.port, () => {
+    console.log(
+      `Server is listening on port ${enviroment.port} in ${enviroment.envName} mode`
+    );
+  });
 });
