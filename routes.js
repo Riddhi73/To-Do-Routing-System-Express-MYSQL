@@ -13,7 +13,7 @@ const update = require("./handlers/routes/updateHandler");
 const deleteHandler = require("./handlers/routes/deleteHandler");
 
 // Import read handler module
-const {readAll, readSingle} = require("./handlers/routes/readHandler");
+const {readAll} = require("./handlers/routes/readHandler");
 
 
 // Define route-to-handler mappings
@@ -21,7 +21,6 @@ const routes = {
   sample: sampleHandler, // Handle sample route
   create: insertAuthorHandler, // Handle create request
   readAll: readAll, // Handle read all request
-  readSingle: readSingle, // Handle read single request
   insert: insertContent,
   update: update, // Handle update request
   delete: deleteHandler, // Handle delete request
