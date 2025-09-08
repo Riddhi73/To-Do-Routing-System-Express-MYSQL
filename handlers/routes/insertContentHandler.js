@@ -13,6 +13,7 @@ const insertContentHandler = async (req, res) => {
     const newContent = {
       title: req.body.title,
       description: req.body.description,
+      date: new Date(),
       author: {
         id: author._id,
         name: author.name,
