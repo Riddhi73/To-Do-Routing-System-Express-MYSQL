@@ -14,7 +14,7 @@ app.post("/create", routes.create);
 app.get("/read", routes.readAll);
 app.get("/read/:id", routes.readSingle);
 app.post("/insertcont", routes.insert);
-app.put("/update/:id", routes.update);
+app.put("/update", routes.update);
 app.delete("/delete/:id", routes.delete);
 
 // 404 handler
